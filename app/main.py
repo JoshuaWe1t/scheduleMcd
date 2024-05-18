@@ -4,7 +4,7 @@ from random import randint
 from datetime import datetime
 
 import vk_botting
-from vk_botting.keyboard import Keyboard
+from vk_botting.keyboard import Keyboard, KeyboardColor
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from db_obj.employee import Employees
 from db_obj.schedule import Schedule
+from db_obj.direct import Direct
 
 load_dotenv("/home/joshua/Документы/myStudy/botMcdSchedule/.env")
 
@@ -31,24 +32,35 @@ DATABASE = {
         'database': DB,
         'query': {'sslmode': 'prefer'}
     }
-    
-engine = create_engine(URL(**DATABASE))
 
 bot = vk_botting.Bot('/')
-bot_keyboard = Keyboard()
 
-is_schedule, is_prime, is_incorrect_data = False, False, False
-number_employee, id_employee = '', ''
-schedule = []
-code = 0
+def get_vk_id_direct():
 
+    with Session(autoflush=False, bind=engine) as db:
+        _query = db.query(Direct.vk_id)
+        # direct_id = _query.all()
+        direct_id = _query.first()[0]
+
+    return direct_id
+    
 def get_keyboard(keyboard):
 
     keyboard.add_button('[CREATE SCHEDULE]')
     keyboard.add_button('[SEND SCHEDULE]')
     keyboard.add_line()
+    keyboard.add_button('[]')
+    keyboard.add_line()
     keyboard.add_button('[FAQ]')
 
+    return keyboard
+
+def get_aplly_keyboard(keyboard, code: int):
+    # keyboard.add_button(f'{vk_id}', KeyboardColor.POSITIVE)
+    # keyboard.add_button(f'-{vk_id}', KeyboardColor.NEGATIVE)
+    keyboard.add_button(f'{code}', KeyboardColor.POSITIVE)
+    keyboard.add_button(f'-{code}', KeyboardColor.NEGATIVE)
+    print(keyboard)
     return keyboard
 
 
@@ -82,13 +94,20 @@ def fill_dim_employees(id: str, vk_id: str, code: int, engine: object):
         print("COMPLETE RECORD DATA EMPLOYEE")
 
 
-def test():
-    url = f"https://api.vk.com/method/messages.send?user_id=168558572&random_id={randint(0, 3)}&message=test&access_token={API_VK_TOKEN}&v=5.131"
-
+def send_schedule_to_direct(id_direct: int, msg_shedule: str, keybord: dict):
+    msg = f"Расписание на утверждение: {msg_shedule}"
+    url = f"https://api.vk.com/method/messages.send?user_id={id_direct}&random_id=0&message={42}&access_token={API_VK_TOKEN}&v=5.199&keyboard={keybord}"
+    print(url)
     payload = {}
     headers = {}
 
     response = requests.request("POST", url, headers=headers, data=payload)
+    print(response.status_code)
+    print(response.text)
+    if response.status_code == 200:
+        print(200)
+    else:
+        print(0)
 
 
 def fill_fct_schedule(code: int, schedule: list):
@@ -101,8 +120,7 @@ def fill_fct_schedule(code: int, schedule: list):
                                 s_wednesday=s_wednesday, s_thursday=s_thursday, s_friday=s_friday,
                                 s_saturday=s_saturday, s_sunday=s_sunday, create_data=datetime.now().date())
         
-        db.add(new_schedule)    
-        # db.flush()    
+        db.add(new_schedule)        
         db.commit()
         print("COMPLETE RECORD DATA SCHEDULE")
 
@@ -110,11 +128,12 @@ def fill_fct_schedule(code: int, schedule: list):
 @bot.listen()
 async def on_ready():
     print(f'Logged in as {bot.group.name}')
+    print(get_vk_id_direct(), type(get_vk_id_direct()))
 
 
 @bot.listen()
 async def on_message_new(message):
-    global is_schedule, is_prime, is_incorrect_data, schedule, code
+    global is_schedule, is_prime, is_incorrect_data, schedule, code, vk_id
 
     if message.text == '[CREATE SCHEDULE]':
         is_schedule = True 
@@ -169,20 +188,20 @@ async def on_message_new(message):
         is_schedule = False
 
         vk_id = message.from_id
-        print(message.text)
+        
         if len(message.text) == 82:
             id, code, schedule = get_employees_data(message.text)
         else:
             is_incorrect_data = True
             id, code, schedule = ['000000', '000', ['****-****' for i in range(7)]]
-        print(schedule)
+        
         if is_incorrect_data:
             msg = "Неккоретно заполнен шаблон с данными\nДля повторного ввода необходимо кликнуть по кнопке [CREATE SCHEDULE]"
             is_incorrect_data = False
             schedule = []
         else:
             msg = f"""
-            -- Ты запросил следующее расписание на новую неделю --
+            -- Вы запросили следующее расписание на новую неделю --
 
             Понедельник: {schedule[0] if schedule[0] != '0000-0000' else 'Выходной'}
             Вторник: {schedule[1] if schedule[1] != '0000-0000' else 'Выходной'}
@@ -217,6 +236,13 @@ async def on_message_new(message):
         Суббота: {schedule[5] if schedule[5] != '0000-0000' else 'Выходной'}
         Воскресенье: {schedule[6] if schedule[6] != '0000-0000' else 'Выходной'}"""
 
+        try:
+            bot_keyboard.get_empty_keyboard()
+        except Exception as exp:
+            print(exp)
+
+        send_schedule_to_direct(id_direct=VK_ID_DIRECT, msg_shedule=msg, keybord=get_aplly_keyboard(inline_keybord, code=code))
+
         await message.reply(message="Расписание отправлено на утверждение")
     elif message.text == '[SEND SCHEDULE]' and not schedule:
         await message.reply(message="Сначало необходимо сформировать расписание")
@@ -227,10 +253,12 @@ async def on_chat_create(message):
     msg = "Для вызова подсказки по работе бота введите команду /help"
     await message.send(message=msg)
 
+
 @bot.listen()
 async def on_conversation_start(message):
     msg = "Для вызова подсказки по работе бота введите команду /help"
     await message.send(message=msg)
+
 
 @bot.command(name='keyboard')
 async def receive_keyboard(context):
@@ -248,4 +276,18 @@ templates = """
 """
 foo = "| {code:>14} | {schedule[0]:>11} | {schedule[1]:>11} | {schedule[2]:>11} | {schedule[3]:>11} | {schedule[4]:>11} | {schedule[5]:>11} | {schedule[6]:>11} |"
 
-bot.run(token=API_VK_TOKEN) 
+if __name__ == "__main__":
+    engine = create_engine(URL(**DATABASE))
+
+    VK_ID_DIRECT = get_vk_id_direct()
+    print(VK_ID_DIRECT)
+
+    bot_keyboard = Keyboard()
+    inline_keybord = Keyboard(inline=True)
+
+    is_schedule, is_prime, is_incorrect_data = False, False, False
+    number_employee, id_employee = '', ''
+    schedule = []
+    code, vk_id = 0, 0
+
+    bot.run(token=API_VK_TOKEN) 
