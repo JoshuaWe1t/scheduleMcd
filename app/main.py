@@ -95,8 +95,9 @@ def fill_dim_employees(id: str, vk_id: str, code: int, engine: object):
 
 
 def send_schedule_to_direct(id_direct: int, msg_shedule: str, keybord: dict):
-    msg = f"Расписание на утверждение: {msg_shedule}"
-    url = f"https://api.vk.com/method/messages.send?user_id={id_direct}&random_id=0&message={42}&access_token={API_VK_TOKEN}&v=5.199&keyboard={keybord}"
+    msg = f"{datetime.now()} Расписание на утверждение: {msg_shedule}"
+    url = f"https://api.vk.com/method/messages.send?v=5.199&access_token={API_VK_TOKEN}&user_id={id_direct}&random_id={randint(0, 2)}&message={msg}&keyboard={keybord}"
+    # url = f"https://api.vk.com/method/messages.send?access_token={API_VK_TOKEN}&user_id={id_direct}&random_id=0&message={42}&keyboard={keybord}"
     print(url)
     payload = {}
     headers = {}
@@ -225,9 +226,9 @@ async def on_message_new(message):
 
     if message.text == '[SEND SCHEDULE]' and schedule:
         is_prime = True
-        msg = f"""
-        -- Желаемое расписание сотрудника #{code} -- 
         
+        msg = f"""
+        -- Желаемое расписание сотрудника {code} -- 
         Понедельник: {schedule[0] if schedule[0] != '0000-0000' else 'Выходной'}
         Вторник: {schedule[1] if schedule[1] != '0000-0000' else 'Выходной'}
         Среда: {schedule[2] if schedule[2] != '0000-0000' else 'Выходной'}
