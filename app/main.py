@@ -9,10 +9,12 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from sqlalchemy.orm import Session
+from sqlalchemy import update, func, select
 
 from db_obj.employee import Employees
 from db_obj.schedule import Schedule
 from db_obj.direct import Direct
+from db_obj.schedule_update import ScheduleUpdate
 
 load_dotenv("/home/joshua/Документы/myStudy/botMcdSchedule/.env")
 
@@ -56,10 +58,8 @@ def get_keyboard(keyboard):
     return keyboard
 
 def get_aplly_keyboard(keyboard, code: int):
-    # keyboard.add_button(f'{vk_id}', KeyboardColor.POSITIVE)
-    # keyboard.add_button(f'-{vk_id}', KeyboardColor.NEGATIVE)
-    keyboard.add_button(f'{code}', KeyboardColor.POSITIVE)
-    keyboard.add_button(f'-{code}', KeyboardColor.NEGATIVE)
+    keyboard.add_button(f'[UPROVE] {code}', KeyboardColor.POSITIVE)
+    keyboard.add_button(f'[REJECT] {code}', KeyboardColor.NEGATIVE)
     print(keyboard)
     return keyboard
 
@@ -124,6 +124,21 @@ def fill_fct_schedule(code: int, schedule: list):
         db.add(new_schedule)        
         db.commit()
         print("COMPLETE RECORD DATA SCHEDULE")
+
+def fill_fct_schedule_update(code: int, schedule: list):
+    """
+    """
+    s_monday, s_tuesday, s_wednesday, s_thursday, s_friday, s_saturday, s_sunday = schedule
+
+    with Session(autoflush=False, bind=engine) as db:
+        new_schedule = ScheduleUpdate(code=code, s_monday=s_monday, s_tuesday=s_tuesday, 
+                                s_wednesday=s_wednesday, s_thursday=s_thursday, s_friday=s_friday,
+                                s_saturday=s_saturday, s_sunday=s_sunday, is_uprove=0, is_reject=0, decided_date=None,
+                                create_data=datetime.now().date())
+        
+        db.add(new_schedule)        
+        db.commit()
+        print("COMPLETE RECORD DATA SCHEDULE UPDATE")
 
 
 @bot.listen()
@@ -214,7 +229,8 @@ async def on_message_new(message):
             """  
 
         schedule = exchange_day_off(schedule=schedule)
-        fill_fct_schedule(code=code, schedule=schedule)    
+        # fill_fct_schedule(code=code, schedule=schedule)    
+        fill_fct_schedule_update(code=code, schedule=schedule) 
 
         try:
             fill_dim_employees(id, vk_id, code, engine)
@@ -248,15 +264,17 @@ async def on_message_new(message):
     elif message.text == '[SEND SCHEDULE]' and not schedule:
         await message.reply(message="Сначало необходимо сформировать расписание")
 
+    # print(message.text, len(message.text), message.text[:len(message.text)-4])
+    if message.text[:len(message.text) - 4] == '[UPROVE]':
+        print('[UPROVE]')
+        stmg = select(ScheduleUpdate.c.created_date).where(Schedule.c.code == message.text[-3:]).all()
+        update(ScheduleUpdate).where(ScheduleUpdate.c.code == message.text[-3:], func.max(stmg).values(is_uprove=1))
+    if message.text[:len(message.text) - 4] == '[REJECT]':
+        print('[REJECT]')
+
 
 @bot.listen()
 async def on_chat_create(message):
-    msg = "Для вызова подсказки по работе бота введите команду /help"
-    await message.send(message=msg)
-
-
-@bot.listen()
-async def on_conversation_start(message):
     msg = "Для вызова подсказки по работе бота введите команду /help"
     await message.send(message=msg)
 
