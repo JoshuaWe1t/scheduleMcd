@@ -1,0 +1,20 @@
+<div class="modal modal-introduction">
+    <div class="modal-content">
+        <h1>{{context.introduction.title}}</h1>
+        <p>{{context.introduction.content}}</p>
+    </div>
+</div>
+<div class="modal modal-about">
+    <div class="modal-content">
+        <h1>{{context.about.title}}</h1>
+        <p>Version {{context.about.version}}</p>
+        <p>
+            Developers: 
+            {% for developer in context.about.developers %}
+                <br><t>{{developer}}
+            {% endfor %}
+        </p>
+        <p>Copyright {{context.about.copyright}}</p>
+    </div>
+</div>
+{% block content %}{% endblock %}

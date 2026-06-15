@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add schedule</title>
+    <link rel="stylesheet" href="../static/employee.css">
+    <link rel="stylesheet" href="../static/winpopup.css">
+</head>
+<body>
+    <header>
+        <h1>Add schedule</h1>
+        {% include "header.html" %}
+    </header>
+    <main>
+        <form method="POST" action="{{ url_for('view_employee') }}" id="test" class="main-wdth">
+        <!-- <div id="test" class="main-wdth"> -->
+            {{ form_schedule.hidden_tag() }}
+            <div class="grid">
+                <div class="grid-cell weekday">
+                    <p>Mon</p>
+                </div>
+                <div class="grid-cell weekday">
+                    <p>Tue</p>
+                </div>
+                <div class="grid-cell weekday">
+                    <p>Wed</p>
+                </div>
+                <div class="grid-cell weekday">
+                    <p>Thu</p>
+                </div>
+                <div class="grid-cell weekday">
+                    <p>Fri</p>
+                </div>
+                <div class="grid-cell weekday">
+                    <p>Sat</p>
+                </div>
+                <div class="grid-cell weekday">
+                    <p>Sun</p>
+                </div>
+                <div class="grid-cell textbox">
+                    {{form_schedule.mon(class="schedule-box", id="mon", type="text", placeholder="__:__ - __:__")}}
+                </div>
+                <div class="grid-cell textbox">
+                    {{form_schedule.tue(class="schedule-box", id="tue", type="text", placeholder="__:__ - __:__")}}
+                </div>
+                <div class="grid-cell textbox">
+                    {{form_schedule.wed(class="schedule-box", id="wed", type="text", placeholder="__:__ - __:__")}}
+                </div>
+                <div class="grid-cell textbox">
+                    {{form_schedule.thu(class="schedule-box", id="thu", type="text", placeholder="__:__ - __:__")}}
+                </div>
+                <div class="grid-cell textbox">
+                    {{form_schedule.fri(class="schedule-box", id="fri", type="text", placeholder="__:__ - __:__")}}
+                </div>
+                <div class="grid-cell textbox">
+                    {{form_schedule.sat(class="schedule-box", id="sat", type="text", placeholder="__:__ - __:__")}}
+                </div>
+                <div class="grid-cell textbox">
+                    {{form_schedule.sun(class="schedule-box", id="sun", type="text", placeholder="__:__ - __:__")}}
+                </div>
+            </div>
+            <div class="btn-sent">
+                {{form_schedule.send_btn(id="btn-send-schedule")}}
+            </div>
+        </form>
+
+        <p class="box-error" id="msg-error"></p>
+        {% if table.ROW == 0 %}
+        <p>You do not have any schedule records</p>
+        {% else %}        <!-- Content to display if the condition is true -->
+        <div id="tbl-schdl" class="main-wdth">
+            <table>
+                <tr>
+                    <th class="table-clmn-title" id="mon">Mon</th>
+                    <th class="table-clmn-title" id="tue">Tue</th>
+                    <th class="table-clmn-title" id="wed">Wed</th>
+                    <th class="table-clmn-title" id="thu">Thu</th>
+                    <th class="table-clmn-title" id="fri">Fri</th>
+                    <th class="table-clmn-title" id="sat">Sat</th>
+                    <th class="table-clmn-title" id="sun">Sun</th>
+                    <th class="table-clmn-title" id="status">Status</th>
+                    <th class="table-clmn-title" id="date">Date</th>
+                </tr>
+                {% for row in range(table.ROW) %}
+                    {% set record = table.user_data[row] %}
+                    <tr>
+                        {% for clmn in range(1, table.COLUMN+1) %}
+                        {% set value = record[table.match_data.get(clmn)] %}
+                        <td class="schedule" id="{{table.match_data[clmn]}}">{{value.capitalize()}}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
+    </main>
+    <footer>
+        <div id="footer-box">
+            <p class="trigger evnt" id="introduction">Introduction</p>
+            <a href="mailto:vensovn@gmail.com?&subject=[Требуется%20помощь]">Help</a>
+            <p class="trigger evnt" id="about">About service</p>
+        </div>
+    </footer>
+    {% include "winpop.html" %}
+    <script src="../static/scripts/winpopup.js"></script>
+    <script src="../static/scripts/checkStatus.js"></script>
+    <script src="../static/scripts/checkTimeshiftValidate.js"></script>
+</body>
+</html>

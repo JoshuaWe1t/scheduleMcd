@@ -1,0 +1,14 @@
+<div id="elm-mng">
+    <!-- <div id="log-out"> -->
+    <form id="log-out" action="{{ url_for('logout') }}">
+        <!-- <button id="btn-log-out">Log out</button> -->
+        {{form_logout.submit(id="btn-log-out", value="Log out")}}
+    <!-- </div> -->
+    </form>
+    <div id="select-lang">
+        <img src={{path_to_icon}} alt="ENG" style="max-height: 30px; max-width: 30px;"
+            id="flag">
+        <p id="lang" class="evnt">EN</p>
+    </div>
+</div>
+<!-- {% block content %}{% endblock %} -->

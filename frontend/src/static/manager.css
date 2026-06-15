@@ -1,0 +1,207 @@
+body {
+    background-color: #dfc8b0;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Упрощает работу с размерами */
+    width: 100%;
+    height: 100%;
+    display: flex; 
+    flex-direction: column; /* Располагаем элементы по вертикали */
+    min-height: 100vh; /* Устанавливаем минимальную высоту страницы */
+}
+
+footer {
+    background-color: #dfc8b0; /* Фон футера */
+    text-align: center; /* Выравнивание текста */
+}   
+
+header h1,
+header div {
+    display: inline;
+}
+
+#select-lang p,
+#select-lang img {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+header {
+    margin: 1.5% 2.5% 1.5% 2.5%;
+    display: flex; /* Используем flexbox для расположения элементов */
+    justify-content: space-between; /* Распределяем пространство между элементами */
+    align-items: center; /* Центрируем элементы по вертикали */
+}
+
+header h1 {
+    margin: 0; /* Убираем отступы у заголовка */
+}
+
+#select-lang {
+    display: flex; /* Используем flexbox для расположения изображения и текста */
+    align-items: center; /* Центрируем элементы по вертикали */
+}
+
+#elm-mng div {
+    display: inline;
+    align-items: center;
+}
+
+#elm-mng {
+    display: flex; /* Используем flexbox для расположения элементов */
+    align-items: center; /* Центрируем элементы по вертикали */
+}
+
+#log-out {
+    margin-right: 10px; /* Добавляем отступ справа от кнопки */
+}
+
+#btn-log-out {
+    height: 25px;
+    width: 75px;
+    border-radius: 5px;
+    border: solid;
+    border-color: #723339;
+    background-color: #723339;
+    color: white;
+    transition: all 0.2s ease; /* Добавляем плавность */
+}
+
+#btn-log-out:active,
+#btn-send-schedule:active {
+    transform: scale(0.95); /* Уменьшаем кнопку при нажатии */
+    background-color: #1a052b; /* Меняем цвет фона при нажатии */
+    border-color: #1a052b; /* Меняем цвет рамки при нажатии */
+}
+
+h1 {
+    /* font-size: 32px; */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #26073e;
+}
+
+footer div {
+    display: flex; 
+    align-items: center; 
+    border: inset white 2px;
+    width: 50%;
+    margin: 0 auto;
+} 
+
+#footer-box {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-color: #e98a2e;
+    border-style: solid;
+    border-radius: 10px 10px 0 0;
+    background-color: #e98a2e;
+}
+
+#footer-box a {
+    margin: 10px 15px 0px 15px;
+    margin: 0 auto;
+}
+
+#footer-box p {
+    margin: 10px 15px 0px 15px;
+    margin: 0 auto;
+}
+
+p.evnt:hover {
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+    color: #26073e;
+}
+
+main{
+    flex-grow: 1; /* main занимает оставшееся пространство */
+    flex-direction: column;
+    align-items: center;
+}
+
+.wlcm p {
+    margin: 0 auto;
+    font-size: 20px;
+    text-align: left;
+    padding-bottom: 10px;
+}
+
+#wrapper-wlcm {
+    margin: 0 0 0 2.5%;
+}
+
+#info-box div.row-info {
+    margin: 1% 10% 1% 10%;
+    flex-direction: column;
+}
+
+.row-info {
+    background-color: #e98a2e;
+    overflow: hidden;
+    padding: 8px 0 8px 0;
+    border-radius: 10px;
+}
+
+.row-info div,
+.row-info form,
+.row-info p {
+    display: inline;
+}
+
+.info-elm p,
+.info-elm button {
+    display: inline;
+}
+
+.expandBtn {
+    cursor: pointer; 
+    margin-left: 2.5%;
+    font-size: 24px;
+    text-decoration: none;
+}
+
+#employee {
+    margin-left: 5%;
+}
+
+#employee p {
+    font-size: 18px;
+    margin-right: 15px;
+}
+
+#cntrl-btn {
+    margin-left: 60%;
+}
+
+#cntrl-btn button {
+    height: 25px;
+    width: 75px;
+}
+
+.approve-btn {
+    font-size: 16px;
+    color: white;
+    border-radius: 5px;
+    border: solid;
+    border-color: #39563b;
+    background-color: #39563b;
+}
+
+.reject-btn {
+    font-size: 16px;
+    color: white;
+    border-radius: 5px;
+    border: solid;
+    border-color: #723339;
+    background-color: #723339;
+}
+
+.approve-btn:active,
+.reject-btn:active {
+    transform: scale(0.95); /* Уменьшаем кнопку при нажатии */
+    background-color: #1a052b; /* Меняем цвет фона при нажатии */
+    border-color: #1a052b; /* Меняем цвет рамки при нажатии */
+}

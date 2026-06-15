@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in</title>
+    <link rel="stylesheet" href="../static/login.css">
+</head>
+<body>
+    <main class="grid">
+        <div class="grid-cell" id="logo">
+            <!-- <img src="images/logo.png" alt=""> -->
+        </div>
+        <div class="grid-cell" id="login-placeholder">
+            <div class="login-header">
+                <!-- <button id="log-out">Press</button> -->
+                <div id="select-lang">
+                    <img src="../static/images/united-states-of-america.png" alt="ENG" style="max-height: 30px; max-width: 30px;" id="flag">
+                    <p id="lang">EN</p>
+                </div>
+            </div>
+            <form method="POST" action="{{ url_for('login') }}" id="log-in" novalidate>
+                {{ form.hidden_tag() }}
+            <!-- <div id="log-in"> -->
+                <p id="label-sign-in">Sign in</p>
+                <div class="login-texbox">
+                    <!-- <input type="text" placeholder="Enter login" class="textbox" id="login"> -->
+                    {{form.username(class="textbox", id="login", placeholder="Enter login")}}
+                    <!-- <input type="password" placeholder="Enter password" class="textbox" id="password"> -->
+                    {{form.password(class="textbox", id="password", placeholder="Enter password")}}
+                </div>
+                <div class="login-bitton">
+                    <!-- <button id="btn-sign-in">Sign in</button> -->
+                    <!-- <input id="btn-sign-in" name="submit" type="submit" value="Sign in"> -->
+                    {{form.submit(id="btn-sign-in", value="Sign in")}}
+                </div>
+            <!-- </div> -->
+            </form>
+        </div>
+    </main>
+    <!-- <script src="../static/scripts/login.js"></script> -->
+    <!-- <script src="{{ url_for('static', filename='scripts/login.js') }}"></script> -->
+</body>
+</html>

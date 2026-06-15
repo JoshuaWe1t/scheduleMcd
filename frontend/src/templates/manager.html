@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule management</title>
+    <!-- <link rel="stylesheet" href="css/employee.css"> -->
+    <link rel="stylesheet" href="../static/manager.css">
+    <link rel="stylesheet" href="../static/winpopup.css">
+</head>
+ <!-- <div id="parentDiv" style="height: 100px; overflow: hidden; border: 1px solid black; width: 300px;">
+        <p style="">
+            Нажмите, чтобы развернуть
+        </p>
+    </div> -->
+<body>
+    <header>
+        <h1>Schedule management</h1>
+        {% include "header.html" %}
+    </header>
+    <main>
+        <div id="wrapper-wlcm">
+            <div class="wlcm" id="wlcm">
+                <p class="p-wlcm" id="wlcm-mngr">Welcome, {{manager_name}}</p>
+                {% if cnt_records == 0 %}
+                <p class="p-wlcm" id="info-mngr">You do not have any schedules for confirmation requests</p>
+                {% else %}
+                <p class="p-wlcm" id="info-mngr">You have received {{cnt_records}} confirmation requests</p>
+                {% endif %}
+            </div>
+        </div>
+        <div id="info-box">
+            {% for record in range(cnt_records) %}
+            <div class="row-info" style="height: auto; overflow: visible;">
+                <p class="expandBtn" id="{{users_shedule[record].code_employee}}">+</p>
+                <div class="info-elm" id="employee">
+                    <p>{{users_shedule[record].id}} {{users_shedule[record].first_name}}</p>
+                    <p>{{users_shedule[record].cnt_day_off}} Day off</p>
+                </div>
+                <form action="{{ url_for('view_manager') }}" method="POST" class="info-elm" id="cntrl-btn">
+                    {{ form_schedule_mng.csrf_token }}
+                    {{form_schedule_mng.code_user(value=users_shedule[record].code_employee)}}
+                    {{form_schedule_mng.approved(class="approve-btn")}}
+                    {{form_schedule_mng.reject(class="reject-btn")}}
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <footer>
+        <div id="footer-box">
+            <p class="trigger evnt" id="introduction">Introduction</p>
+            <a href="mailto:vensovn@gmail.com?&subject=[Требуется%20помощь]">Help</a>
+            <p class="trigger evnt" id="about">About service</p>
+        </div>
+    </footer>
+    {% include "winpop.html" %}
+    <script>
+    let data = {{users_shedule|tojson}};
+    function createTable(data, code) {
+        let result = data.find(employee => employee.code_employee === code);
+        if (!result) return '';
+        console.log(result)
+        return `
+            <tr>
+                <th>Mon</th>
+                <th>Tue</th>
+                <th>Wed</th>
+                <th>Thu</th>
+                <th>Fri</th>
+                <th>Sat</th>
+                <th>Sun</th>
+                <th>Week</th>
+            </tr>
+            <tr>
+                <td style="text-align: center; vertical-align: middle;">${result.mon}</td>
+                <td style="text-align: center; vertical-align: middle;">${result.tue}</td>
+                <td style="text-align: center; vertical-align: middle;">${result.wed}</td>
+                <td style="text-align: center; vertical-align: middle;">${result.thu}</td>
+                <td style="text-align: center; vertical-align: middle;">${result.fri}</td>
+                <td style="text-align: center; vertical-align: middle;">${result.sat}</td>
+                <td style="text-align: center; vertical-align: middle;">${result.sun}</td>
+                <td style="text-align: center; vertical-align: middle;">${result.week_start_date}</td>
+            </tr>
+        `;}
+
+    const expandButtons = document.querySelectorAll('.expandBtn');
+
+    expandButtons.forEach(button => {
+        const parent = button.closest('.row-info');
+        parent.dataset.originalHeight = parent.style.height || parent.offsetHeight + 'px';
+        
+        button.addEventListener('click', e => {
+            const existingTable = parent.querySelector('table'),
+                userCode = (button.id);
+            if (existingTable) {
+                // Скрываем таблицу и возвращаем высоту
+                existingTable.remove();
+                parent.style.height = parent.dataset.originalHeight;
+                parent.style.overflow = 'hidden';
+                button.textContent = '+'; // меняем знак обратно
+            } else {
+                // Показываем таблицу и расширяем блок
+                parent.style.height = 'auto';
+                parent.style.overflow = 'visible';
+
+                const table = document.createElement('table');
+                table.id = "tbl-" + button.id;
+                table.border = '1';
+                table.style.width = '100%';
+                table.innerHTML += createTable(data, userCode);
+
+                parent.appendChild(table);
+                button.textContent = '−'; // меняем знак на минус
+            }
+        })
+    })
+    </script>
+    <script src="../static/scripts/winpopup.js"></script>
+    <!-- <script src="../static/scripts/logout.js"></script> -->
+    <!-- <script src="../static/scripts/manager.js"></script> -->
+</body>
+</html>
